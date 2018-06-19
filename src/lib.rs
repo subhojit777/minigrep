@@ -14,3 +14,10 @@ pub fn read_file(filename: &str) -> String {
 pub fn search(file_content: &str, search_string: &str) -> bool {
     file_content.contains(search_string)
 }
+
+pub fn parse_config(args: &[String]) -> (&str, &str) {
+    let query = &args[1];
+    let filename = &args[2];
+
+    (query, filename)
+}
