@@ -9,5 +9,7 @@ pub fn main() {
     let filename = &args[2];
 
     let file_content = minigrep::read_file(filename);
-    print!("{}\n", file_content);
+
+    let has_search_string = minigrep::search(&file_content, search_string);
+    print!("{}\n", has_search_string);
 }

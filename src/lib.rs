@@ -10,3 +10,7 @@ pub fn read_file(filename: &str) -> String {
 
     file_content
 }
+
+pub fn search(file_content: &str, search_string: &str) -> bool {
+    file_content.contains(search_string)
+}
