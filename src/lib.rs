@@ -7,6 +7,8 @@ pub struct Config {
     filename: String
 }
 
+type ReadFileResult <T> = Result<T, Error>;
+
 impl Config {
     pub fn new(query: &str, filename: &str) -> Config {
         Config { query: query.to_string(), filename: filename.to_string() }
@@ -21,7 +23,7 @@ impl Config {
     }
 }
 
-pub fn read_file(filename: &str) -> Result<String, Error> {
+pub fn read_file(filename: &str) -> ReadFileResult<String> {
     let mut f = File::open(filename)?;
     let mut file_content = String::new();
 
