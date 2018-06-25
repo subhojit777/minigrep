@@ -8,7 +8,7 @@ pub fn main() {
 
     let parameters: Config = minigrep::parse_config(&args);
 
-    let file_content: String = minigrep::read_file(parameters.get_filename());
+    let file_content: String = minigrep::read_file(parameters.get_filename()).expect("Something went wrong.");
 
     let has_search_string: bool = minigrep::search(&file_content, parameters.get_query());
     print!("{}\n", has_search_string);
