@@ -36,6 +36,10 @@ pub fn search(file_content: &str, search_string: &str) -> bool {
     file_content.contains(search_string)
 }
 
-pub fn parse_config(args: &[String]) -> Config {
-    Config::new(&args[1], &args[2])
+pub fn parse_config(args: &[String]) -> Result<Config, &'static str> {
+    if args.len() < 3 {
+        return Err("too few arguments");
+    }
+
+    Ok(Config::new(&args[1], &args[2]))
 }
