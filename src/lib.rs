@@ -43,3 +43,33 @@ pub fn parse_config(args: &[String]) -> Result<Config, &'static str> {
 
     Ok(Config::new(&args[1], &args[2]))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_config() {
+        let query = "query";
+        let filename = "filename";
+
+        let config = Config::new(query, filename);
+
+        assert_eq!(config.get_query(), query);
+        assert_eq!(config.get_filename(), filename);
+    }
+
+    #[test]
+    fn test_read_file() {
+        let filename = "./test-data/test.txt";
+        let result = read_file(filename);
+
+        assert_eq!(result.is_ok(), true);
+        assert_eq!(result.unwrap(), "This is test data.\n");
+
+        let filename = "../test-data/does-not-exist.txt";
+        let result = read_file(filename);
+
+        assert_eq!(result.is_err(), true);
+    }
+}
