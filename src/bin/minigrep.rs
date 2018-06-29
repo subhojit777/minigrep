@@ -14,6 +14,6 @@ pub fn main() {
 
     let file_content: String = minigrep::read_file(config.get_filename()).expect("Something went wrong.");
 
-    let has_search_string: bool = minigrep::search(&file_content, config.get_query());
-    print!("{}\n", has_search_string);
+    let has_search_string = minigrep::search(&file_content, config.get_query());
+    print!("{:?}\n", has_search_string);
 }

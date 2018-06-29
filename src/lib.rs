@@ -32,8 +32,15 @@ pub fn read_file(filename: &str) -> ReadFileResult<String> {
     Ok(file_content)
 }
 
-pub fn search(file_content: &str, search_string: &str) -> bool {
-    file_content.contains(search_string)
+pub fn search(file_content: &str, search_string: &str) -> Vec<usize> {
+    let result: Vec<_> = file_content.match_indices(search_string).collect();
+    let mut matched_indices = Vec::new();
+
+    for i in result {
+        matched_indices.push(i.0);
+    }
+
+    matched_indices
 }
 
 pub fn parse_config(args: &[String]) -> Result<Config, &'static str> {
@@ -71,5 +78,20 @@ mod tests {
         let result = read_file(filename);
 
         assert_eq!(result.is_err(), true);
+    }
+
+    #[test]
+    fn test_search() {
+        let filename = "./test-data/test.txt";
+        let result = read_file(filename);
+        let file_content = result.unwrap();
+
+        let result = search(&file_content, "is");
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0], 2);
+        assert_eq!(result[1], 5);
+
+        let result = search(&file_content, "Aloy");
+        assert_eq!(result.len(), 0);
     }
 }
