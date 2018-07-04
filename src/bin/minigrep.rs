@@ -22,21 +22,39 @@ pub fn main() {
         process::exit(0);
     }
 
-    // Print the file content, and highlight the query.
-    let query_length = config.get_query().len();
-    let mut highlight_query_counter = 0;
-    let file_content_char_indices = file_content.char_indices();
-    let matched_indices_as_iter = matched_indices.iter();
-    let mut matched_index = matched_indices_as_iter.next().unwrap();
+    let mut start = 0;
+    let query_length: usize = config.get_query().len();
+    let mut matched_indices_as_iter = matched_indices.iter();
 
-    for i in file_content_char_indices {
-        if i.0 == *matched_index || highlight_query_counter < query_length {
-            print!("{}", (i.1).green().bold());
-            highlight_query_counter += 1;
-            matched_index = matched_indices_as_iter.next().unwrap();
-        } else {
-            highlight_query_counter = 0;
-            print!("{}", i.1);
+    loop {
+        let matched_index = matched_indices_as_iter.next();
+
+        if matched_index.is_none() {
+            break;
+        }
+
+        let matched_index = matched_index.unwrap();
+
+        let normal = &file_content[start..*matched_index];
+        let highlight_end_pos = matched_index + query_length;
+        let highlight = &file_content[*matched_index..highlight_end_pos];
+
+        print!("{}", normal);
+        print!("{}", highlight.green().bold());
+
+        start = highlight_end_pos;
+
+        let matched_index = matched_indices_as_iter.next();
+
+        if matched_index.is_none() {
+            let normal = &file_content[start..];
+            print!("{}", normal);
+            break;
+        }
+        else {
+            let matched_index = matched_index.unwrap();
+            let normal = &file_content[start..*matched_index];
+            print!("{}", normal);
         }
     }
 }
