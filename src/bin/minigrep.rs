@@ -22,6 +22,7 @@ pub fn main() {
         process::exit(0);
     }
 
+    // TODO: Find a way to move the code below inside the main module.
     let mut start = 0;
     let query_length: usize = config.get_query().len();
     let mut matched_indices_as_iter = matched_indices.iter();
@@ -30,6 +31,9 @@ pub fn main() {
         let matched_index = matched_indices_as_iter.next();
 
         if matched_index.is_none() {
+            let normal = &file_content[start..];
+            print!("{}", normal);
+
             break;
         }
 
@@ -43,18 +47,5 @@ pub fn main() {
         print!("{}", highlight.green().bold());
 
         start = highlight_end_pos;
-
-        let matched_index = matched_indices_as_iter.next();
-
-        if matched_index.is_none() {
-            let normal = &file_content[start..];
-            print!("{}", normal);
-            break;
-        }
-        else {
-            let matched_index = matched_index.unwrap();
-            let normal = &file_content[start..*matched_index];
-            print!("{}", normal);
-        }
     }
 }
