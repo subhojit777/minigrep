@@ -23,6 +23,7 @@ pub fn main() {
     }
 
     // TODO: Find a way to move the code below inside the main module.
+    // Print the content and highlight the query string within it.
     let mut start = 0;
     let query_length: usize = config.get_query().len();
     let mut matched_indices_as_iter = matched_indices.iter();
