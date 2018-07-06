@@ -3,6 +3,7 @@ use std::io::prelude::*;
 use std::io::Error;
 
 pub struct Config {
+    options: String,
     query: String,
     filename: String
 }
@@ -10,8 +11,16 @@ pub struct Config {
 type ReadFileResult <T> = Result<T, Error>;
 
 impl Config {
-    pub fn new(query: &str, filename: &str) -> Config {
-        Config { query: query.to_string(), filename: filename.to_string() }
+    pub fn new(options: &str, query: &str, filename: &str) -> Result<Config, &'static str> {
+        if !options.starts_with("-") {
+            return Err("Options should start with -");
+        }
+
+        Ok(Config { options: options[1..].to_string(), query: query.to_string(), filename: filename.to_string() })
+    }
+
+    pub fn get_options(&self) -> &str {
+        &self.options
     }
 
     pub fn get_query(&self) -> &str {
@@ -43,12 +52,13 @@ pub fn search(file_content: &str, search_string: &str) -> Vec<usize> {
     matched_indices
 }
 
-pub fn parse_config(args: &[String]) -> Result<Config, &'static str> {
-    if args.len() < 3 {
+pub fn parse_config(args: &[String]) -> Result<Config, &str> {
+    // TODO: Make `options` optional.
+    if args.len() < 4 {
         return Err("too few arguments");
     }
 
-    Ok(Config::new(&args[1], &args[2]))
+    Ok(Config::new(&args[1], &args[2], &args[3])?)
 }
 
 #[cfg(test)]
@@ -57,13 +67,33 @@ mod tests {
 
     #[test]
     fn test_config() {
+        let options = "-i";
         let query = "query";
         let filename = "filename";
 
-        let config = Config::new(query, filename);
+        let config = Config::new(options, query, filename);
 
+        assert!(config.is_ok());
+        let config = config.unwrap();
+        assert_eq!(config.get_options(), &options[1..]);
         assert_eq!(config.get_query(), query);
         assert_eq!(config.get_filename(), filename);
+
+        let options = "-";
+
+        let config = Config::new(options, query, filename);
+
+        assert!(config.is_ok());
+        let config = config.unwrap();
+        assert!(config.get_options().is_empty());
+        assert_eq!(config.get_query(), query);
+        assert_eq!(config.get_filename(), filename);
+
+        let options = "";
+
+        let config = Config::new(options, query, filename);
+
+        assert!(config.is_err());
     }
 
     #[test]
