@@ -126,9 +126,10 @@ mod tests {
 
     #[test]
     fn test_search() {
-        let filename = "./test-data/test.txt";
-        let result = read_file(filename);
-        let file_content = result.unwrap();
+        let f = File::open("./test-data/test.txt");
+        let mut file_content = String::new();
+
+        let _ = f.unwrap().read_to_string(&mut file_content);
 
         let result = search(&file_content, "is");
         assert_eq!(result.len(), 2);
