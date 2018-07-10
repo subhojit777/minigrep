@@ -52,9 +52,17 @@ pub fn read_file(filename: &str) -> ReadFileResult<String> {
 /// Looks for the query inside the given content.
 ///
 /// It returns the indices where the query is found in the content.
-pub fn search(file_content: &str, search_string: &str) -> Vec<usize> {
-    let result: Vec<_> = file_content.match_indices(search_string).collect();
+pub fn search(file_content: &str, search_string: &str, options: &str) -> Vec<usize> {
     let mut matched_indices = Vec::new();
+    let mut file_content_copy = file_content.to_string();
+    let mut search_string_copy = search_string.to_string();
+
+    if options == "-i" {
+        file_content_copy = file_content_copy.to_lowercase();
+        search_string_copy = search_string_copy.to_lowercase();
+    }
+
+    let result: Vec<_> = file_content_copy.match_indices(&search_string_copy).collect();
 
     for i in result {
         matched_indices.push(i.0);

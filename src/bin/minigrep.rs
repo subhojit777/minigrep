@@ -15,7 +15,7 @@ pub fn main() {
     });
 
     let file_content: String = minigrep::read_file(config.get_filename()).expect("Something went wrong.");
-    let matched_indices = minigrep::search(&file_content, config.get_query());
+    let matched_indices = minigrep::search(&file_content, config.get_query(), config.get_options());
 
     // No need to proceed if no match is found.
     if matched_indices.len() == 0 {
