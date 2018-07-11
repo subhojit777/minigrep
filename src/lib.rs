@@ -57,7 +57,7 @@ pub fn search(file_content: &str, search_string: &str, options: &str) -> Vec<usi
     let mut file_content_copy = file_content.to_string();
     let mut search_string_copy = search_string.to_string();
 
-    if options == "-i" {
+    if options == "i" {
         file_content_copy = file_content_copy.to_lowercase();
         search_string_copy = search_string_copy.to_lowercase();
     }
@@ -139,16 +139,16 @@ mod tests {
 
         let _ = f.unwrap().read_to_string(&mut file_content);
 
-        let result = search(&file_content, "is", "-");
+        let result = search(&file_content, "is", "");
         assert_eq!(result.len(), 2);
         assert_eq!(result[0], 2);
         assert_eq!(result[1], 5);
 
-        let result = search(&file_content, "TEST", "-i");
+        let result = search(&file_content, "TEST", "i");
         assert_eq!(result.len(), 1);
         assert_eq!(result[0], 8);
 
-        let result = search(&file_content, "Aloy", "-");
+        let result = search(&file_content, "Aloy", "");
         assert_eq!(result.len(), 0);
     }
 }
