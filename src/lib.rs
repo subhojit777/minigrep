@@ -2,6 +2,8 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::Error;
 
+type ReadFileResult <T> = Result<T, Error>;
+
 /// The necessary configurations for initializing minigrep.
 pub struct Config {
     options: String,
@@ -9,7 +11,10 @@ pub struct Config {
     filename: String
 }
 
-type ReadFileResult <T> = Result<T, Error>;
+pub enum Options {
+    CaseSensitive,
+    ExactMatch
+}
 
 impl Config {
     /// Initializes a new Config.
@@ -57,13 +62,14 @@ pub fn search(file_content: &str, search_string: &str, options: &str) -> Vec<usi
     let mut file_content_copy = file_content.to_string();
     let mut search_string_copy = search_string.to_string();
 
+    // TODO: Replace the code below by https://docs.rs/regex/1.0.1/regex/struct.RegexBuilder.html#method.new
     if options == "i" {
         file_content_copy = file_content_copy.to_lowercase();
         search_string_copy = search_string_copy.to_lowercase();
     }
 
+    // TODO: https://gist.github.com/rust-play/54c6bbfce4e3fd40d02c7a236487696b
     let result: Vec<_> = file_content_copy.match_indices(&search_string_copy).collect();
-
     for i in result {
         matched_indices.push(i.0);
     }
