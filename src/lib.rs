@@ -1,48 +1,16 @@
+pub mod config;
+mod options;
+extern crate regex;
+
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::Error;
+use config::*;
+use options::*;
+use regex::RegexBuilder;
+use std::fmt::Write;
 
 type ReadFileResult <T> = Result<T, Error>;
-
-/// The necessary configurations for initializing minigrep.
-pub struct Config {
-    options: String,
-    query: String,
-    filename: String
-}
-
-pub enum Options {
-    CaseSensitive,
-    ExactMatch
-}
-
-impl Config {
-    /// Initializes a new Config.
-    ///
-    /// It returns error if incorrect option is passed.
-    pub fn new(options: &str, query: &str, filename: &str) -> Result<Config, &'static str> {
-        if !options.starts_with("-") {
-            return Err("Options should start with -");
-        }
-
-        Ok(Config { options: options[1..].to_string(), query: query.to_string(), filename: filename.to_string() })
-    }
-
-    /// Returns options for a Config.
-    pub fn get_options(&self) -> &str {
-        &self.options
-    }
-
-    /// Returns query for a Config.
-    pub fn get_query(&self) -> &str {
-        &self.query
-    }
-
-    /// Returns filename for a config.
-    pub fn get_filename(&self) -> &str {
-        &self.filename
-    }
-}
 
 /// Returns the content inside the mentioned file name.
 pub fn read_file(filename: &str) -> ReadFileResult<String> {
@@ -57,21 +25,27 @@ pub fn read_file(filename: &str) -> ReadFileResult<String> {
 /// Looks for the query inside the given content.
 ///
 /// It returns the indices where the query is found in the content.
-pub fn search(file_content: &str, search_string: &str, options: &str) -> Vec<usize> {
+pub fn search(file_content: &str, search_string: &str, options: &Option<Options>) -> Vec<usize> {
     let mut matched_indices = Vec::new();
-    let mut file_content_copy = file_content.to_string();
     let mut search_string_copy = search_string.to_string();
+    let mut regex_builder = RegexBuilder::new(&search_string_copy);
 
-    // TODO: Replace the code below by https://docs.rs/regex/1.0.1/regex/struct.RegexBuilder.html#method.new
-    if options == "i" {
-        file_content_copy = file_content_copy.to_lowercase();
-        search_string_copy = search_string_copy.to_lowercase();
+    match options {
+        Some(options_struct) => {
+            if options_struct.is_exact_match() {
+                search_string_copy.clear();
+                write!(search_string_copy, r"\b{}\b", search_string).unwrap();
+            }
+
+            if options_struct.is_case_sensitive() {
+                regex_builder.case_insensitive(true);
+            }
+        },
+        None => {},
     }
 
-    // TODO: https://gist.github.com/rust-play/54c6bbfce4e3fd40d02c7a236487696b
-    let result: Vec<_> = file_content_copy.match_indices(&search_string_copy).collect();
-    for i in result {
-        matched_indices.push(i.0);
+    for mat in regex_builder.build().unwrap().find_iter(file_content) {
+        matched_indices.push(mat.start());
     }
 
     matched_indices
@@ -94,37 +68,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_config() {
-        let options = "-i";
-        let query = "query";
-        let filename = "filename";
-
-        let config = Config::new(options, query, filename);
-
-        assert!(config.is_ok());
-        let config = config.unwrap();
-        assert_eq!(config.get_options(), &options[1..]);
-        assert_eq!(config.get_query(), query);
-        assert_eq!(config.get_filename(), filename);
-
-        let options = "-";
-
-        let config = Config::new(options, query, filename);
-
-        assert!(config.is_ok());
-        let config = config.unwrap();
-        assert!(config.get_options().is_empty());
-        assert_eq!(config.get_query(), query);
-        assert_eq!(config.get_filename(), filename);
-
-        let options = "";
-
-        let config = Config::new(options, query, filename);
-
-        assert!(config.is_err());
-    }
-
-    #[test]
     fn test_read_file() {
         let filename = "./test-data/test.txt";
         let result = read_file(filename);
@@ -142,19 +85,27 @@ mod tests {
     fn test_search() {
         let f = File::open("./test-data/test.txt");
         let mut file_content = String::new();
+        let options = None;
 
         let _ = f.unwrap().read_to_string(&mut file_content);
 
-        let result = search(&file_content, "is", "");
+        let result = search(&file_content, "is", options);
         assert_eq!(result.len(), 2);
         assert_eq!(result[0], 2);
         assert_eq!(result[1], 5);
 
-        let result = search(&file_content, "TEST", "i");
+        let options = Some(Options::new(true, true));
+        let result = search(&file_content, "is", options);
+        assert_eq!(result.len(), 1);
+        assert_eq!(result[0], 2);
+
+        let options = Some(Options::new(true, false));
+        let result = search(&file_content, "TEST", options);
         assert_eq!(result.len(), 1);
         assert_eq!(result[0], 8);
 
-        let result = search(&file_content, "Aloy", "");
+        let options = None;
+        let result = search(&file_content, "Aloy", options);
         assert_eq!(result.len(), 0);
     }
 }

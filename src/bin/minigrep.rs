@@ -9,13 +9,13 @@ use colored::*;
 pub fn main() {
     let args: Vec<String> = env::args().collect();
 
-    let config: Config = minigrep::parse_config(&args).unwrap_or_else(|err| {
+    let config: config::Config = parse_config(&args).unwrap_or_else(|err| {
         println!("Error occurred while processing: {}", err);
         process::exit(1);
     });
 
-    let file_content: String = minigrep::read_file(config.get_filename()).expect("Something went wrong.");
-    let matched_indices = minigrep::search(&file_content, config.get_query(), config.get_options());
+    let file_content: String = read_file(config.get_filename()).expect("Something went wrong.");
+    let matched_indices = search(&file_content, config.get_query(), config.get_options());
 
     // No need to proceed if no match is found.
     if matched_indices.len() == 0 {
