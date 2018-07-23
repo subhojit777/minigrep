@@ -118,4 +118,31 @@ mod tests {
         let result = search(&file_content, "Aloy", options);
         assert_eq!(result.len(), 0);
     }
+
+    #[test]
+    fn test_parse_config() {
+        let args = [String::from("command"), String::from("too few arguments")];
+
+        let config = parse_config(&args);
+        assert_eq!(config.is_err(), true);
+
+        let args = [
+            String::from("command"),
+            String::from("query"),
+            String::from("filename"),
+        ];
+
+        let config = parse_config(&args);
+        assert_eq!(config.is_ok(), true);
+
+        let args = [
+            String::from("command"),
+            String::from("-i"),
+            String::from("query"),
+            String::from("filename"),
+        ];
+
+        let config = parse_config(&args);
+        assert_eq!(config.is_ok(), true);
+    }
 }
