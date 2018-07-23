@@ -25,7 +25,7 @@ pub fn read_file(filename: &str) -> ReadFileResult<String> {
 /// Looks for the query inside the given content.
 ///
 /// It returns the indices where the query is found in the content.
-pub fn search(file_content: &str, search_string: &str, options: &Option<Options>) -> Vec<usize> {
+pub fn search(file_content: &str, search_string: &str, options: Option<&Options>) -> Vec<usize> {
     let mut matched_indices = Vec::new();
     let mut search_string_copy = search_string.to_string();
     let mut regex_builder = RegexBuilder::new(&search_string_copy);
@@ -94,12 +94,14 @@ mod tests {
         assert_eq!(result[0], 2);
         assert_eq!(result[1], 5);
 
-        let options = Some(Options::new(true, true));
+        let options_struct = Options::new(true, true);
+        let options = Some(&options_struct);
         let result = search(&file_content, "is", options);
         assert_eq!(result.len(), 1);
         assert_eq!(result[0], 2);
 
-        let options = Some(Options::new(true, false));
+        let options_struct = Options::new(true, false);
+        let options = Some(&options_struct);
         let result = search(&file_content, "TEST", options);
         assert_eq!(result.len(), 1);
         assert_eq!(result[0], 8);

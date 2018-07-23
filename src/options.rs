@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct Options {
     case_sensitive: bool,
     exact_match: bool
@@ -25,12 +26,18 @@ impl Options {
     }
 }
 
+impl PartialEq for Options {
+    fn eq(&self, other: &Options) -> bool {
+        self.case_sensitive == other.case_sensitive && self.exact_match == other.exact_match
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn test_new() {
+    fn test_options_new() {
         let case_sensitive = true;
         let exact_match = false;
 
@@ -41,7 +48,7 @@ mod tests {
     }
 
     #[test]
-    fn test_case_sensitive() {
+    fn test_options_case_sensitive() {
         let mut options = Options {
             case_sensitive: false,
             exact_match: false
@@ -54,7 +61,7 @@ mod tests {
     }
 
     #[test]
-    fn test_exact_match() {
+    fn test_options_exact_match() {
         let mut options = Options {
             case_sensitive: false,
             exact_match: false
@@ -68,7 +75,7 @@ mod tests {
 
     #[test]
     fn test_options_is_case_sensitive() {
-        let mut options = Options {
+        let options = Options {
             case_sensitive: false,
             exact_match: true
         };
@@ -78,7 +85,7 @@ mod tests {
 
     #[test]
     fn test_options_is_exact_match() {
-        let mut options = Options {
+        let options = Options {
             case_sensitive: true,
             exact_match: false
         };

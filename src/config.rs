@@ -36,8 +36,8 @@ impl Config {
     }
 
     /// Returns options for a Config.
-    pub fn get_options(&self) -> &Option<Options> {
-        &self.options
+    pub fn get_options(&self) -> Option<&Options> {
+        self.options.as_ref()
     }
 
     /// Returns query for a Config.
@@ -73,8 +73,8 @@ mod tests {
 
         let options = options.unwrap();
 
-        assert_eq!(options.case_sensitive, true);
-        assert_eq!(options.exact_match, true);
+        assert_eq!(options.is_case_sensitive(), true);
+        assert_eq!(options.is_exact_match(), true);
         assert_eq!(config.get_query(), query);
         assert_eq!(config.get_filename(), filename);
     }
@@ -101,55 +101,39 @@ mod tests {
 
     #[test]
     fn test_config_get_options() {
-        let options = Some(Options {
-            case_sensitive: true,
-            exact_match: false
-        });
-        let query = "query";
-        let filename = "filename";
+        let query = String::from("query");
+        let filename = String::from("filename");
 
         let config = Config {
-            options: options,
+            options: Some(Options::new(true, false)),
             query: query,
             filename: filename
         };
 
-        assert_eq!(config.get_options(), options);
+        let options_struct = Options::new(true, false);
+        assert_eq!(config.get_options().is_some(), true);
+        assert_eq!(config.get_options().unwrap(), &options_struct);
     }
 
     #[test]
     fn test_config_get_query() {
-        let options = Some(Options {
-            case_sensitive: true,
-            exact_match: false
-        });
-        let query = "query";
-        let filename = "filename";
-
         let config = Config {
-            options: options,
-            query: query,
-            filename: filename
+            options: Some(Options::new(true, false)),
+            query: String::from("query"),
+            filename: String::from("filename")
         };
 
-        assert_eq!(config.get_query(), query);
+        assert_eq!(config.get_query(), "query");
     }
 
     #[test]
     fn test_config_get_filename() {
-        let options = Some(Options {
-            case_sensitive: true,
-            exact_match: false
-        });
-        let query = "query";
-        let filename = "filename";
-
         let config = Config {
-            options: options,
-            query: query,
-            filename: filename
+            options: Some(Options::new(true, false)),
+            query: String::from("query"),
+            filename: String::from("filename")
         };
 
-        assert_eq!(config.get_filename(), filename);
+        assert_eq!(config.get_filename(), "filename");
     }
 }
