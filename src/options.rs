@@ -1,12 +1,15 @@
 #[derive(Debug)]
 pub struct Options {
     case_sensitive: bool,
-    exact_match: bool
+    exact_match: bool,
 }
 
 impl Options {
     pub fn new(case_sensitive: bool, exact_match: bool) -> Options {
-        Options {case_sensitive: case_sensitive, exact_match: exact_match}
+        Options {
+            case_sensitive: case_sensitive,
+            exact_match: exact_match,
+        }
     }
 
     pub fn case_sensitive(&mut self, yes: bool) {
@@ -51,7 +54,7 @@ mod tests {
     fn test_options_case_sensitive() {
         let mut options = Options {
             case_sensitive: false,
-            exact_match: false
+            exact_match: false,
         };
 
         options.case_sensitive(true);
@@ -64,7 +67,7 @@ mod tests {
     fn test_options_exact_match() {
         let mut options = Options {
             case_sensitive: false,
-            exact_match: false
+            exact_match: false,
         };
 
         options.exact_match(true);
@@ -77,7 +80,7 @@ mod tests {
     fn test_options_is_case_sensitive() {
         let options = Options {
             case_sensitive: false,
-            exact_match: true
+            exact_match: true,
         };
 
         assert_eq!(options.is_case_sensitive(), false);
@@ -87,7 +90,7 @@ mod tests {
     fn test_options_is_exact_match() {
         let options = Options {
             case_sensitive: true,
-            exact_match: false
+            exact_match: false,
         };
 
         assert_eq!(options.is_exact_match(), false);

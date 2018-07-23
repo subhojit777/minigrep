@@ -1,10 +1,10 @@
-extern crate minigrep;
 extern crate colored;
+extern crate minigrep;
 
+use colored::*;
+use minigrep::*;
 use std::env;
 use std::process;
-use minigrep::*;
-use colored::*;
 
 pub fn main() {
     let args: Vec<String> = env::args().collect();

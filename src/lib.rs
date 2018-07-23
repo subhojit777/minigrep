@@ -2,15 +2,15 @@ pub mod config;
 mod options;
 extern crate regex;
 
-use std::fs::File;
-use std::io::prelude::*;
-use std::io::Error;
 use config::*;
 use options::*;
 use regex::RegexBuilder;
 use std::fmt::Write;
+use std::fs::File;
+use std::io::prelude::*;
+use std::io::Error;
 
-type ReadFileResult <T> = Result<T, Error>;
+type ReadFileResult<T> = Result<T, Error>;
 
 /// Returns the content inside the mentioned file name.
 pub fn read_file(filename: &str) -> ReadFileResult<String> {
@@ -41,8 +41,8 @@ pub fn search(file_content: &str, search_string: &str, options: Option<&Options>
             if options_struct.is_case_sensitive() {
                 regex_builder.case_insensitive(true);
             }
-        },
-        None => {},
+        }
+        None => {}
     }
 
     for mat in regex_builder.build().unwrap().find_iter(file_content) {
@@ -64,7 +64,11 @@ pub fn parse_config(args: &[String]) -> Result<Config, &str> {
         return Ok(Config::new(None, &args[1], &args[2])?);
     }
 
-    Ok(Config::new(Some(&args[1].trim_left_matches('-')), &args[2], &args[3])?)
+    Ok(Config::new(
+        Some(&args[1].trim_left_matches('-')),
+        &args[2],
+        &args[3],
+    )?)
 }
 
 #[cfg(test)]

@@ -4,7 +4,7 @@ use options::*;
 pub struct Config {
     options: Option<Options>,
     query: String,
-    filename: String
+    filename: String,
 }
 
 impl Config {
@@ -13,7 +13,11 @@ impl Config {
     /// It returns error if incorrect option is passed.
     pub fn new(options: Option<&str>, query: &str, filename: &str) -> Result<Config, &'static str> {
         if options.is_none() {
-            return Ok(Config { options: None, query: query.to_string(), filename: filename.to_string() });
+            return Ok(Config {
+                options: None,
+                query: query.to_string(),
+                filename: filename.to_string(),
+            });
         }
 
         let mut options_struct = Options::new(false, false);
@@ -22,11 +26,15 @@ impl Config {
             match ch {
                 'i' => options_struct.case_sensitive(true),
                 'w' => options_struct.exact_match(true),
-                _ => return Err("Invalid option given. Allowed options are 'i' and 'w'.")
+                _ => return Err("Invalid option given. Allowed options are 'i' and 'w'."),
             }
         }
 
-        Ok(Config { options: Some(options_struct), query: query.to_string(), filename: filename.to_string() })
+        Ok(Config {
+            options: Some(options_struct),
+            query: query.to_string(),
+            filename: filename.to_string(),
+        })
     }
 
     /// Returns options for a Config.
@@ -99,7 +107,7 @@ mod tests {
         let config = Config {
             options: Some(Options::new(true, false)),
             query: query,
-            filename: filename
+            filename: filename,
         };
 
         let options_struct = Options::new(true, false);
@@ -112,7 +120,7 @@ mod tests {
         let config = Config {
             options: Some(Options::new(true, false)),
             query: String::from("query"),
-            filename: String::from("filename")
+            filename: String::from("filename"),
         };
 
         assert_eq!(config.get_query(), "query");
@@ -123,7 +131,7 @@ mod tests {
         let config = Config {
             options: Some(Options::new(true, false)),
             query: String::from("query"),
-            filename: String::from("filename")
+            filename: String::from("filename"),
         };
 
         assert_eq!(config.get_filename(), "filename");
