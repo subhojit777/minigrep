@@ -11,20 +11,14 @@ impl Config {
     /// Initializes a new Config.
     ///
     /// It returns error if incorrect option is passed.
-    pub fn new(options: &str, query: &str, filename: &str) -> Result<Config, &'static str> {
-        if options.is_empty() {
+    pub fn new(options: Option<&str>, query: &str, filename: &str) -> Result<Config, &'static str> {
+        if options.is_none() {
             return Ok(Config { options: None, query: query.to_string(), filename: filename.to_string() });
         }
 
-        if !options.starts_with("-") {
-            return Err("Options should start with -");
-        }
-
-        let options_without_dash = options.trim_left_matches('-');
-
         let mut options_struct = Options::new(false, false);
 
-        for ch in options_without_dash.chars() {
+        for ch in options.unwrap().chars() {
             match ch {
                 'i' => options_struct.case_sensitive(true),
                 'w' => options_struct.exact_match(true),
@@ -57,11 +51,10 @@ mod tests {
 
     #[test]
     fn test_config_with_options() {
-        let options = "-iw";
         let query = "query";
         let filename = "filename";
 
-        let config = Config::new(options, query, filename);
+        let config = Config::new(Some("iw"), query, filename);
 
         assert_eq!(config.is_ok(), true);
 
@@ -81,11 +74,10 @@ mod tests {
 
     #[test]
     fn test_config_without_options() {
-        let options = "";
         let query = "query";
         let filename = "filename";
 
-        let config = Config::new(options, query, filename);
+        let config = Config::new(None, query, filename);
 
         assert_eq!(config.is_ok(), true);
 

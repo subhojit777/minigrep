@@ -35,6 +35,7 @@ pub fn search(file_content: &str, search_string: &str, options: Option<&Options>
             if options_struct.is_exact_match() {
                 search_string_copy.clear();
                 write!(search_string_copy, r"\b{}\b", search_string).unwrap();
+                regex_builder = RegexBuilder::new(&search_string_copy);
             }
 
             if options_struct.is_case_sensitive() {
@@ -55,12 +56,15 @@ pub fn search(file_content: &str, search_string: &str, options: Option<&Options>
 ///
 /// It returns error if too few arguments are passed.
 pub fn parse_config(args: &[String]) -> Result<Config, &str> {
-    // TODO: Make `options` optional.
-    if args.len() < 4 {
+    if args.len() < 3 {
         return Err("too few arguments");
     }
 
-    Ok(Config::new(&args[1], &args[2], &args[3])?)
+    if !args[1].starts_with("-") {
+        return Ok(Config::new(None, &args[1], &args[2])?);
+    }
+
+    Ok(Config::new(Some(&args[1].trim_left_matches('-')), &args[2], &args[3])?)
 }
 
 #[cfg(test)]
@@ -98,7 +102,7 @@ mod tests {
         let options = Some(&options_struct);
         let result = search(&file_content, "is", options);
         assert_eq!(result.len(), 1);
-        assert_eq!(result[0], 2);
+        assert_eq!(result[0], 5);
 
         let options_struct = Options::new(true, false);
         let options = Some(&options_struct);
