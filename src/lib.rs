@@ -56,9 +56,14 @@ pub fn search(file_content: &str, search_string: &str, options: Option<&Options>
 ///
 /// It returns error if too few arguments are passed.
 pub fn parse_config(args: &[String]) -> Result<Config, &str> {
-    if args.len() < 3 {
+    let args_length = args.len();
+    let filename = args[args_length - 1];
+
+    if args_length < 3 {
         return Err("too few arguments");
     }
+
+    let mut file = File::open(filename)?;
 
     if !args[1].starts_with("-") {
         return Ok(Config::new(None, &args[1], &args[2])?);
@@ -122,27 +127,36 @@ mod tests {
     #[test]
     fn test_parse_config() {
         let args = [String::from("command"), String::from("too few arguments")];
-
         let config = parse_config(&args);
+
         assert_eq!(config.is_err(), true);
 
         let args = [
             String::from("command"),
             String::from("query"),
-            String::from("filename"),
+            String::from("../test-data/does-not-exist.txt"),
         ];
-
         let config = parse_config(&args);
+
+        assert_eq!(config.is_err(), true);
+
+        let args = [
+            String::from("command"),
+            String::from("query"),
+            String::from("./test-data/test.txt"),
+        ];
+        let config = parse_config(&args);
+
         assert_eq!(config.is_ok(), true);
 
         let args = [
             String::from("command"),
             String::from("-i"),
             String::from("query"),
-            String::from("filename"),
+            String::from("./test-data/test.txt"),
         ];
-
         let config = parse_config(&args);
+
         assert_eq!(config.is_ok(), true);
     }
 }
