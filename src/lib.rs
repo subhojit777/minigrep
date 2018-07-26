@@ -1,9 +1,11 @@
 pub mod config;
 mod options;
+mod minigrep_error;
 extern crate regex;
 
 use config::*;
 use options::*;
+use minigrep_error::*;
 use regex::RegexBuilder;
 use std::fmt::Write;
 use std::fs::File;
@@ -11,6 +13,8 @@ use std::io::prelude::*;
 use std::io::Error;
 
 type ReadFileResult<T> = Result<T, Error>;
+type GenError = Box<std::error::Error>;
+type GenResult<T> = Result<T, GenError>;
 
 /// Returns the content inside the mentioned file name.
 pub fn read_file(filename: &str) -> ReadFileResult<String> {
@@ -55,15 +59,18 @@ pub fn search(file_content: &str, search_string: &str, options: Option<&Options>
 /// Parses the command line arguments and prepares them for usage.
 ///
 /// It returns error if too few arguments are passed.
-pub fn parse_config(args: &[String]) -> Result<Config, &str> {
+pub fn parse_config(args: &[String]) -> GenResult<Config> {
     let args_length = args.len();
-    let filename = args[args_length - 1];
+    let filename = &args[args_length - 1];
 
     if args_length < 3 {
-        return Err("too few arguments");
+        return Err(GenError::from(MinigrepError::new("too few arguments")));
     }
 
-    let mut file = File::open(filename)?;
+    let file = File::open(filename);
+    if file.is_err() {
+        return Err(GenError::from(file.err().unwrap()));
+    }
 
     if !args[1].starts_with("-") {
         return Ok(Config::new(None, &args[1], &args[2])?);
