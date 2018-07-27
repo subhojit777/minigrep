@@ -1,4 +1,6 @@
 use options::*;
+use super::{GenError, GenResult};
+use super::minigrep_error::*;
 
 /// The necessary configurations for initializing minigrep.
 pub struct Config {
@@ -11,7 +13,7 @@ impl Config {
     /// Initializes a new Config.
     ///
     /// It returns error if incorrect option is passed.
-    pub fn new(options: Option<&str>, query: &str, filename: &str) -> Result<Config, &'static str> {
+    pub fn new(options: Option<&str>, query: &str, filename: &str) -> GenResult<Config> {
         if options.is_none() {
             return Ok(Config {
                 options: None,
@@ -26,7 +28,8 @@ impl Config {
             match ch {
                 'i' => options_struct.case_sensitive(true),
                 'w' => options_struct.exact_match(true),
-                _ => return Err("Invalid option given. Allowed options are 'i' and 'w'."),
+                _ => return Err(GenError::from(MinigrepError::new("Invalid option given. Allowed options are 'i' and 'w'."))),
+
             }
         }
 
@@ -97,6 +100,16 @@ mod tests {
 
         assert_eq!(config.get_query(), query);
         assert_eq!(config.get_filename(), filename);
+    }
+
+    #[test]
+    fn test_config_with_invalid_options() {
+        let query = "query";
+        let filename = "filename";
+
+        let config = Config::new(Some("vi"), query, filename);
+
+        assert_eq!(config.is_err(), true);
     }
 
     #[test]
