@@ -58,7 +58,10 @@ pub fn search(file_content: &str, search_string: &str, options: Option<&Options>
 
 /// Parses the command line arguments and prepares them for usage.
 ///
-/// It returns error if too few arguments are passed.
+/// It returns error in following cases:
+/// - Too few arguments are passed.
+/// - Incorrect options are passed.
+/// - File could not be opened.
 pub fn parse_config(args: &[String]) -> GenResult<Config> {
     let args_length = args.len();
     let filename = &args[args_length - 1];
@@ -72,14 +75,15 @@ pub fn parse_config(args: &[String]) -> GenResult<Config> {
         return Err(GenError::from(file.err().unwrap()));
     }
 
+    let file = file.unwrap();
     if !args[1].starts_with("-") {
-        return Ok(Config::new(None, &args[1], &args[2])?);
+        return Ok(Config::new(None, &args[1], &file)?);
     }
 
     Ok(Config::new(
         Some(&args[1].trim_left_matches('-')),
         &args[2],
-        &args[3],
+        &file,
     )?)
 }
 
