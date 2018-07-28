@@ -1,11 +1,11 @@
 pub mod config;
-mod options;
 mod minigrep_error;
+mod options;
 extern crate regex;
 
 use config::*;
-use options::*;
 use minigrep_error::*;
+use options::*;
 use regex::RegexBuilder;
 use std::fmt::Write;
 use std::fs::File;

@@ -1,6 +1,6 @@
-use options::*;
-use super::{GenError, GenResult};
 use super::minigrep_error::*;
+use super::{GenError, GenResult};
+use options::*;
 use std::fs::File;
 
 /// The necessary configurations for initializing minigrep.
@@ -29,8 +29,11 @@ impl Config {
             match ch {
                 'i' => options_struct.case_sensitive(true),
                 'w' => options_struct.exact_match(true),
-                _ => return Err(GenError::from(MinigrepError::new("Invalid option given. Allowed options are 'i' and 'w'."))),
-
+                _ => {
+                    return Err(GenError::from(MinigrepError::new(
+                        "Invalid option given. Allowed options are 'i' and 'w'.",
+                    )))
+                }
             }
         }
 
@@ -80,7 +83,10 @@ mod tests {
         assert_eq!(options.is_case_sensitive(), true);
         assert_eq!(options.is_exact_match(), true);
         assert_eq!(config.get_query(), query);
-        assert_eq!(config.get_file().metadata().unwrap().len(), file.metadata().unwrap().len());
+        assert_eq!(
+            config.get_file().metadata().unwrap().len(),
+            file.metadata().unwrap().len()
+        );
     }
 
     #[test]
@@ -96,7 +102,10 @@ mod tests {
 
         assert_eq!(options.is_none(), true);
         assert_eq!(config.get_query(), query);
-        assert_eq!(config.get_file().metadata().unwrap().len(), file.metadata().unwrap().len());
+        assert_eq!(
+            config.get_file().metadata().unwrap().len(),
+            file.metadata().unwrap().len()
+        );
     }
 
     #[test]
@@ -144,8 +153,14 @@ mod tests {
             file: file.try_clone().unwrap(),
         };
 
-        assert_eq!(config.get_file().metadata().unwrap().len(), file.metadata().unwrap().len());
+        assert_eq!(
+            config.get_file().metadata().unwrap().len(),
+            file.metadata().unwrap().len()
+        );
         assert!(config.get_file().metadata().unwrap().is_file());
-        assert_eq!(config.get_file().metadata().unwrap().file_type(), file.metadata().unwrap().file_type());
+        assert_eq!(
+            config.get_file().metadata().unwrap().file_type(),
+            file.metadata().unwrap().file_type()
+        );
     }
 }
