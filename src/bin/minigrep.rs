@@ -19,7 +19,7 @@ pub fn main() {
     config
         .get_file()
         .read_to_string(&mut file_content)
-        .expect("Something went wrong while reading th file");
+        .expect("Something went wrong while reading the file");
     let matched_indices = search(&config);
 
     // No need to proceed if no match is found.

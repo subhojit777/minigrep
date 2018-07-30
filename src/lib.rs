@@ -1,6 +1,6 @@
 pub mod config;
 mod minigrep_error;
-mod options;
+pub mod options;
 extern crate regex;
 
 use config::*;
@@ -25,7 +25,8 @@ pub fn search(config: &Config) -> Vec<usize> {
 
     match config.get_options() {
         Some(options) => {
-            // In case of word boundary check, recreate the regex builder with a word boundary regex.
+            // In case of word boundary check, recreate the regex builder with
+            // a word boundary regex.
             if options.is_exact_match() {
                 query_copy.clear();
                 write!(query_copy, r"\b{}\b", config.get_query()).unwrap();

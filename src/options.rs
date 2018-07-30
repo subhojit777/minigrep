@@ -1,3 +1,4 @@
+/// Possible options for a Config.
 #[derive(Debug)]
 pub struct Options {
     case_sensitive: bool,
@@ -5,6 +6,7 @@ pub struct Options {
 }
 
 impl Options {
+    /// Initializes a new Options.
     pub fn new(case_sensitive: bool, exact_match: bool) -> Options {
         Options {
             case_sensitive: case_sensitive,
@@ -12,18 +14,40 @@ impl Options {
         }
     }
 
+    /// Adds case-sensitive to the options.
     pub fn case_sensitive(&mut self, yes: bool) {
         self.case_sensitive = yes;
     }
 
+    /// Adds exact match to the options.
     pub fn exact_match(&mut self, yes: bool) {
         self.exact_match = yes;
     }
 
+    /// Checks if the options has exact match check.
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// use minigrep::options::*;
+    ///
+    /// let options = Options::new(true, true);
+    /// assert!(options.is_exact_match());
+    /// ```
     pub fn is_exact_match(&self) -> bool {
         self.exact_match
     }
 
+    /// Checks if the options has case-sensitive check.
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// use minigrep::options::*;
+    ///
+    /// let options = Options::new(false, true);
+    /// assert!(!options.is_case_sensitive());
+    /// ```
     pub fn is_case_sensitive(&self) -> bool {
         self.case_sensitive
     }
@@ -43,7 +67,6 @@ mod tests {
     fn test_options_new() {
         let case_sensitive = true;
         let exact_match = false;
-
         let options = Options::new(case_sensitive, exact_match);
 
         assert_eq!(options.case_sensitive, case_sensitive);
@@ -56,7 +79,6 @@ mod tests {
             case_sensitive: false,
             exact_match: false,
         };
-
         options.case_sensitive(true);
 
         assert_eq!(options.case_sensitive, true);
@@ -69,7 +91,6 @@ mod tests {
             case_sensitive: false,
             exact_match: false,
         };
-
         options.exact_match(true);
 
         assert_eq!(options.exact_match, true);

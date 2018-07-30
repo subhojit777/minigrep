@@ -44,17 +44,17 @@ impl Config {
         })
     }
 
-    /// Returns options for a Config.
+    /// Returns the options for a Config.
     pub fn get_options(&self) -> Option<&Options> {
         self.options.as_ref()
     }
 
-    /// Returns query for a Config.
+    /// Returns the query for a Config.
     pub fn get_query(&self) -> &str {
         &self.query
     }
 
-    /// Returns filename for a config.
+    /// Returns the filename for a config.
     pub fn get_file(&self) -> &File {
         &self.file
     }
