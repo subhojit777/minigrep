@@ -5,51 +5,41 @@ extern crate regex;
 
 use config::*;
 use minigrep_error::*;
-use options::*;
 use regex::RegexBuilder;
 use std::fmt::Write;
 use std::fs::File;
 use std::io::prelude::*;
-use std::io::Error;
 
-type ReadFileResult<T> = Result<T, Error>;
 type GenError = Box<std::error::Error>;
 type GenResult<T> = Result<T, GenError>;
 
-/// Returns the content inside the mentioned file name.
-pub fn read_file(filename: &str) -> ReadFileResult<String> {
-    let mut f = File::open(filename)?;
-    let mut file_content = String::new();
-
-    f.read_to_string(&mut file_content)?;
-
-    Ok(file_content)
-}
-
-/// Looks for the query inside the given content.
+/// Executes the search.
 ///
 /// It returns the indices where the query is found in the content.
-pub fn search(file_content: &str, search_string: &str, options: Option<&Options>) -> Vec<usize> {
+pub fn search(config: &Config) -> Vec<usize> {
     let mut matched_indices = Vec::new();
-    let mut search_string_copy = search_string.to_string();
-    let mut regex_builder = RegexBuilder::new(&search_string_copy);
+    let mut file_content = String::new();
+    config.get_file().read_to_string(&mut file_content).unwrap();
+    let mut query_copy = config.get_query().to_string();
+    let mut regex_builder = RegexBuilder::new(&query_copy);
 
-    match options {
-        Some(options_struct) => {
-            if options_struct.is_exact_match() {
-                search_string_copy.clear();
-                write!(search_string_copy, r"\b{}\b", search_string).unwrap();
-                regex_builder = RegexBuilder::new(&search_string_copy);
+    match config.get_options() {
+        Some(options) => {
+            // In case of word boundary check, recreate the regex builder with a word boundary regex.
+            if options.is_exact_match() {
+                query_copy.clear();
+                write!(query_copy, r"\b{}\b", config.get_query()).unwrap();
+                regex_builder = RegexBuilder::new(&query_copy);
             }
 
-            if options_struct.is_case_sensitive() {
+            if options.is_case_sensitive() {
                 regex_builder.case_insensitive(true);
             }
         }
         None => {}
     }
 
-    for mat in regex_builder.build().unwrap().find_iter(file_content) {
+    for mat in regex_builder.build().unwrap().find_iter(&file_content) {
         matched_indices.push(mat.start());
     }
 
@@ -92,46 +82,33 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_read_file() {
-        let filename = "./test-data/test.txt";
-        let result = read_file(filename);
-
-        assert_eq!(result.is_ok(), true);
-        assert_eq!(result.unwrap(), "This is test data.\n");
-
-        let filename = "../test-data/does-not-exist.txt";
-        let result = read_file(filename);
-
-        assert_eq!(result.is_err(), true);
-    }
-
-    #[test]
     fn test_search() {
-        let f = File::open("./test-data/test.txt");
-        let mut file_content = String::new();
-        let options = None;
+        let f = File::open("./test-data/test.txt").unwrap();
+        let config = Config::new(None, "is", &f).unwrap();
+        let result = search(&config);
 
-        let _ = f.unwrap().read_to_string(&mut file_content);
-
-        let result = search(&file_content, "is", options);
         assert_eq!(result.len(), 2);
         assert_eq!(result[0], 2);
         assert_eq!(result[1], 5);
 
-        let options_struct = Options::new(true, true);
-        let options = Some(&options_struct);
-        let result = search(&file_content, "is", options);
+        let f = File::open("./test-data/test.txt").unwrap();
+        let config = Config::new(Some("iw"), "is", &f).unwrap();
+        let result = search(&config);
+
         assert_eq!(result.len(), 1);
         assert_eq!(result[0], 5);
 
-        let options_struct = Options::new(true, false);
-        let options = Some(&options_struct);
-        let result = search(&file_content, "TEST", options);
+        let f = File::open("./test-data/test.txt").unwrap();
+        let config = Config::new(Some("i"), "TEST", &f).unwrap();
+        let result = search(&config);
+
         assert_eq!(result.len(), 1);
         assert_eq!(result[0], 8);
 
-        let options = None;
-        let result = search(&file_content, "Aloy", options);
+        let f = File::open("./test-data/test.txt").unwrap();
+        let config = Config::new(None, "Aloy", &f).unwrap();
+        let result = search(&config);
+
         assert_eq!(result.len(), 0);
     }
 

@@ -4,6 +4,7 @@ extern crate minigrep;
 use colored::*;
 use minigrep::*;
 use std::env;
+use std::io::Read;
 use std::process;
 
 pub fn main() {
@@ -14,8 +15,12 @@ pub fn main() {
         process::exit(1);
     });
 
-    let file_content: String = read_file(config.get_filename()).expect("Something went wrong.");
-    let matched_indices = search(&file_content, config.get_query(), config.get_options());
+    let mut file_content = String::new();
+    config
+        .get_file()
+        .read_to_string(&mut file_content)
+        .expect("Something went wrong while reading th file");
+    let matched_indices = search(&config);
 
     // No need to proceed if no match is found.
     if matched_indices.len() == 0 {
