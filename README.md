@@ -44,4 +44,9 @@ I have open sourced this because I have followed a different implementation than
 what is suggested in the book. [TDD](https://en.wikipedia.org/wiki/Test-driven_development)
 followed while writing the helper libraries.
 
+## What is differently done in `minigrep`?
+- Case-insensitive search can be done by passing an option.
+- Ability to do exact-match search.
+- The query is highlighted in the output.
+
 Feedbacks are welcome :)
