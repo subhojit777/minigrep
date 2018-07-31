@@ -9,6 +9,7 @@ use regex::RegexBuilder;
 use std::fmt::Write;
 use std::fs::File;
 use std::io::prelude::*;
+use std::io::SeekFrom;
 
 type GenError = Box<std::error::Error>;
 type GenResult<T> = Result<T, GenError>;
@@ -16,7 +17,10 @@ type GenResult<T> = Result<T, GenError>;
 /// Executes the search.
 ///
 /// It returns the indices where the query is found in the content.
-pub fn search(config: &Config) -> Vec<usize> {
+pub fn search(config: &mut Config) -> Vec<usize> {
+    // We make sure that the file is always read from the beginning.
+    config.get_file_as_mut().seek(SeekFrom::Start(0)).unwrap();
+
     let mut matched_indices = Vec::new();
     let mut file_content = String::new();
     config.get_file().read_to_string(&mut file_content).unwrap();
@@ -85,30 +89,27 @@ mod tests {
     #[test]
     fn test_search() {
         let f = File::open("./test-data/test.txt").unwrap();
-        let config = Config::new(None, "is", &f).unwrap();
-        let result = search(&config);
+        let mut config = Config::new(None, "is", &f).unwrap();
+        let result = search(&mut config);
 
         assert_eq!(result.len(), 2);
         assert_eq!(result[0], 2);
         assert_eq!(result[1], 5);
 
-        let f = File::open("./test-data/test.txt").unwrap();
-        let config = Config::new(Some("iw"), "is", &f).unwrap();
-        let result = search(&config);
+        let mut config = Config::new(Some("iw"), "is", &f).unwrap();
+        let result = search(&mut config);
 
         assert_eq!(result.len(), 1);
         assert_eq!(result[0], 5);
 
-        let f = File::open("./test-data/test.txt").unwrap();
-        let config = Config::new(Some("i"), "TEST", &f).unwrap();
-        let result = search(&config);
+        let mut config = Config::new(Some("i"), "TEST", &f).unwrap();
+        let result = search(&mut config);
 
         assert_eq!(result.len(), 1);
         assert_eq!(result[0], 8);
 
-        let f = File::open("./test-data/test.txt").unwrap();
-        let config = Config::new(None, "Aloy", &f).unwrap();
-        let result = search(&config);
+        let mut config = Config::new(None, "Aloy", &f).unwrap();
+        let result = search(&mut config);
 
         assert_eq!(result.len(), 0);
     }

@@ -45,10 +45,10 @@ fn test_bin() {
         String::from("is"),
         String::from("./test-data/test.txt"),
     ];
-    let config = parse_config(&args).unwrap();
+    let mut config = parse_config(&args).unwrap();
     let mut file_content = String::new();
     config.get_file().read_to_string(&mut file_content).unwrap();
-    let matched_indices = search(&config);
+    let matched_indices = search(&mut config);
 
     assert_eq!(matched_indices.len(), 1);
     assert_eq!(matched_indices[0], 5);

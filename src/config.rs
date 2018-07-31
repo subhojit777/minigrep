@@ -54,9 +54,14 @@ impl Config {
         &self.query
     }
 
-    /// Returns the filename for a config.
+    /// Returns the file for a config.
     pub fn get_file(&self) -> &File {
         &self.file
+    }
+
+    /// Returns the file as mutable for a config.
+    pub fn get_file_as_mut(&mut self) -> &mut File {
+        &mut self.file
     }
 }
 

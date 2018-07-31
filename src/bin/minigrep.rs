@@ -10,7 +10,7 @@ use std::process;
 pub fn main() {
     let args: Vec<String> = env::args().collect();
 
-    let config: config::Config = parse_config(&args).unwrap_or_else(|err| {
+    let mut config = parse_config(&args).unwrap_or_else(|err| {
         println!("Error occurred while processing: {}", err);
         process::exit(1);
     });
@@ -20,7 +20,7 @@ pub fn main() {
         .get_file()
         .read_to_string(&mut file_content)
         .expect("Something went wrong while reading the file");
-    let matched_indices = search(&config);
+    let matched_indices = search(&mut config);
 
     // No need to proceed if no match is found.
     if matched_indices.len() == 0 {
