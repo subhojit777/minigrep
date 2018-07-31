@@ -13,8 +13,10 @@ cargo build --release
 
 ## Usage
 ```sh
-./target/release/minigrep <options> nemo find-nemo-the-movie.txt
+./target/release/minigrep -<options> nemo find-nemo-the-movie.txt
 ```
+
+Example - `./target/release/minigrep -i nemo find-nemo-the-movie.txt`
 
 ### Allowed Options
 ```
