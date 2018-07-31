@@ -11,7 +11,7 @@ pub fn main() {
     let args: Vec<String> = env::args().collect();
 
     let mut config = parse_config(&args).unwrap_or_else(|err| {
-        println!("Error occurred while processing: {}", err);
+        eprintln!("Error occurred while processing: {}", err);
         process::exit(1);
     });
 
