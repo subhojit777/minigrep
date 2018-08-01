@@ -1,6 +1,6 @@
-use super::minigrep_error::*;
+use super::error::*;
 use super::{GenError, GenResult};
-use options::*;
+use super::options::*;
 use std::fs::File;
 
 /// The necessary configurations for initializing minigrep.

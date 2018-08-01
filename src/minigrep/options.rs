@@ -29,7 +29,7 @@ impl Options {
     /// # Example:
     ///
     /// ```
-    /// use minigrep::options::*;
+    /// use minigrep::minigrep::options::Options;
     ///
     /// let options = Options::new(true, true);
     /// assert!(options.is_exact_match());
@@ -43,7 +43,7 @@ impl Options {
     /// # Example:
     ///
     /// ```
-    /// use minigrep::options::*;
+    /// use minigrep::minigrep::options::Options;
     ///
     /// let options = Options::new(false, true);
     /// assert!(!options.is_case_sensitive());

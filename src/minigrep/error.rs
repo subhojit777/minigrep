@@ -8,7 +8,6 @@ pub struct MinigrepError {
 }
 
 impl MinigrepError {
-    /// Creates a new MinigrepError.
     pub fn new(message: &str) -> Self {
         MinigrepError {
             message: message.to_string(),

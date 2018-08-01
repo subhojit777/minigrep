@@ -1,18 +1,14 @@
-pub mod config;
-mod minigrep_error;
-pub mod options;
+pub mod minigrep;
 extern crate regex;
 
-use config::*;
-use minigrep_error::*;
+use minigrep::config::Config;
+use minigrep::error::MinigrepError;
+use minigrep::{GenError, GenResult};
 use regex::RegexBuilder;
 use std::fmt::Write;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::SeekFrom;
-
-type GenError = Box<std::error::Error>;
-type GenResult<T> = Result<T, GenError>;
 
 /// Executes the search.
 ///
